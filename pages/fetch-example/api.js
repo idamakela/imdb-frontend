@@ -32,7 +32,7 @@ export async function addCharacter(name) {
   return { data, status: res.status };
 }
 
-export async function editCharacter(id, name) {
+export async function editCharacter({ name, id }) { //ordningen spelar roll, för att strunta i det skicka in det som object överallt
   const res = await fetch(`${BASE_URL}${id}${API_KEY_QUERY}`, {
     method: 'PUT',
     headers: {

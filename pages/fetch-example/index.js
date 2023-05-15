@@ -74,7 +74,7 @@ export default function Characters() {
 
   const handleEditCharacter = async ({ id, name }) => {
     try {
-      const {data, status} = await editCharacter(id, name);
+      const { data, status } = await editCharacter({ id, name });
 
       if (status !== 200) {
         setToaster({
