@@ -52,23 +52,14 @@ export default function Characters() {
 
   const handleAddCharacter = async (name) => {
     try {
-      //   const res = await fetch('http://localhost:3001/characters?apiKey=5', {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({ character: { name } }),
-      //   });
+      const { data, status } = await addCharacter(name);
 
-      //   const data = await res.json();
-      const response = await addCharacter(name);
-
-      if (response.status !== 200) {
-        setToaster({ message: response.data.message, type: 'error' });
+      if (status !== 200) {
+        setToaster({ message: data.message, type: 'error' });
         return;
       }
 
-      setData((prevState) => [...prevState, response.data]);
+      setData((prevState) => [...prevState, data]);
     } catch (e) {
       setToaster({
         message: 'An error occured when trying to add a character',
@@ -83,28 +74,18 @@ export default function Characters() {
 
   const handleEditCharacter = async ({ id, name }) => {
     try {
-    //   const res = await fetch(`http://localhost:3001/characters/${id}?apiKey=5`, {
-    //     method: 'PUT',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ character: { id, name } }),
-    //   });
+      const {data, status} = await editCharacter(id, name);
 
-    //   const data = await res.json();
-
-    const response = await editCharacter(id, name)
-
-      if (response.status !== 200) {
+      if (status !== 200) {
         setToaster({
-          message: response.data.message,
+          message: data.message,
           type: 'error',
         });
         return;
       }
 
       setData((prevState) =>
-        prevState.map((char) => (char.id === id ? { ...char, ...response.data } : char))
+        prevState.map((char) => (char.id === id ? { ...char, ...data } : char))
       );
     } catch (e) {
       setToaster({
