@@ -3,7 +3,7 @@ import styles from './Characters.module.css';
 import Toaster from './components/Toaster/Toaster';
 import CharacterListItem from './components/CharacterListItem/CharacterListItem';
 import CharacterModal from './components/CharacterModal/CharacterModal';
-import { getCharacter } from './api.js';
+import { getCharacter, deleteCharacter, addCharacter, editCharacter } from './api.js';
 
 export default function Characters() {
   const [data, setData] = useState([]);
@@ -32,14 +32,10 @@ export default function Characters() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(`http://localhost:3001/characters/${id}?apiKey=5`, {
-        method: 'DELETE',
-      });
-
-      const data = await res.json();
-      if (res.status !== 200) {
+      const response = await deleteCharacter(id);
+      if (response.status !== 200) {
         setToaster({
-          message: data.message,
+          message: response.data.message,
           type: 'error',
         });
         return;
@@ -56,22 +52,23 @@ export default function Characters() {
 
   const handleAddCharacter = async (name) => {
     try {
-      const res = await fetch('http://localhost:3001/characters?apiKey=5', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ character: { name } }),
-      });
+      //   const res = await fetch('http://localhost:3001/characters?apiKey=5', {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify({ character: { name } }),
+      //   });
 
-      const data = await res.json();
+      //   const data = await res.json();
+      const response = await addCharacter(name);
 
-      if (res.status !== 200) {
-        setToaster({ message: data.message, type: 'error' });
+      if (response.status !== 200) {
+        setToaster({ message: response.data.message, type: 'error' });
         return;
       }
 
-      setData((prevState) => [...prevState, data]);
+      setData((prevState) => [...prevState, response.data]);
     } catch (e) {
       setToaster({
         message: 'An error occured when trying to add a character',
@@ -86,26 +83,28 @@ export default function Characters() {
 
   const handleEditCharacter = async ({ id, name }) => {
     try {
-      const res = await fetch(`http://localhost:3001/characters/${id}?apiKey=5`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ character: { id, name } }),
-      });
+    //   const res = await fetch(`http://localhost:3001/characters/${id}?apiKey=5`, {
+    //     method: 'PUT',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ character: { id, name } }),
+    //   });
 
-      const data = await res.json();
+    //   const data = await res.json();
 
-      if (res.status !== 200) {
+    const response = await editCharacter(id, name)
+
+      if (response.status !== 200) {
         setToaster({
-          message: data.message,
+          message: response.data.message,
           type: 'error',
         });
         return;
       }
 
       setData((prevState) =>
-        prevState.map((char) => (char.id === id ? { ...char, ...data } : char))
+        prevState.map((char) => (char.id === id ? { ...char, ...response.data } : char))
       );
     } catch (e) {
       setToaster({
