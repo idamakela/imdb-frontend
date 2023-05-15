@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import styles from "./Characters.module.css";
-import Toaster from "./components/Toaster/Toaster";
-import CharacterListItem from "./components/CharacterListItem/CharacterListItem";
-import CharacterModal from "./components/CharacterModal/CharacterModal";
+import { useEffect, useState } from 'react';
+import styles from './Characters.module.css';
+import Toaster from './components/Toaster/Toaster';
+import CharacterListItem from './components/CharacterListItem/CharacterListItem';
+import CharacterModal from './components/CharacterModal/CharacterModal';
+import { getCharacter } from './api.js';
 
 export default function Characters() {
   const [data, setData] = useState([]);
@@ -12,16 +13,12 @@ export default function Characters() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:3001/characters?apiKey=5", {
-          method: "GET",
-        });
-
-        const data = await res.json();
-        setData(data);
+        const response = await getCharacter();
+        setData(response.data);
       } catch (e) {
         setToaster({
-          message: "Ops! Något gick fel",
-          type: "error",
+          message: 'Ops! Något gick fel',
+          type: 'error',
         });
       }
     };
@@ -35,18 +32,15 @@ export default function Characters() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch(
-        `http://localhost:3001/characters/${id}?apiKey=5`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`http://localhost:3001/characters/${id}?apiKey=5`, {
+        method: 'DELETE',
+      });
 
       const data = await res.json();
       if (res.status !== 200) {
         setToaster({
           message: data.message,
-          type: "error",
+          type: 'error',
         });
         return;
       }
@@ -54,18 +48,18 @@ export default function Characters() {
       setData((prevState) => prevState.filter((char) => char.id !== id));
     } catch (e) {
       setToaster({
-        message: "Datan kunde inte deletas",
-        type: "error",
+        message: 'Datan kunde inte deletas',
+        type: 'error',
       });
     }
   };
 
   const handleAddCharacter = async (name) => {
     try {
-      const res = await fetch("http://localhost:3001/characters?apiKey=5", {
-        method: "POST",
+      const res = await fetch('http://localhost:3001/characters?apiKey=5', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ character: { name } }),
       });
@@ -73,15 +67,15 @@ export default function Characters() {
       const data = await res.json();
 
       if (res.status !== 200) {
-        setToaster({ message: data.message, type: "error" });
+        setToaster({ message: data.message, type: 'error' });
         return;
       }
 
       setData((prevState) => [...prevState, data]);
     } catch (e) {
       setToaster({
-        message: "An error occured when trying to add a character",
-        type: "error",
+        message: 'An error occured when trying to add a character',
+        type: 'error',
       });
     }
   };
@@ -92,23 +86,20 @@ export default function Characters() {
 
   const handleEditCharacter = async ({ id, name }) => {
     try {
-      const res = await fetch(
-        `http://localhost:3001/characters/${id}?apiKey=5`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ character: { id, name } }),
-        }
-      );
+      const res = await fetch(`http://localhost:3001/characters/${id}?apiKey=5`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ character: { id, name } }),
+      });
 
       const data = await res.json();
 
       if (res.status !== 200) {
         setToaster({
           message: data.message,
-          type: "error",
+          type: 'error',
         });
         return;
       }
@@ -118,8 +109,8 @@ export default function Characters() {
       );
     } catch (e) {
       setToaster({
-        message: "An error occured when trying to edit a character",
-        type: "error",
+        message: 'An error occured when trying to edit a character',
+        type: 'error',
       });
     }
   };
@@ -145,19 +136,8 @@ export default function Characters() {
           );
         })}
       </ul>
-      {toaster && (
-        <Toaster
-          message={toaster.message}
-          type={toaster.type}
-          onClose={closeToaster}
-        />
-      )}
-      {isOpen && (
-        <CharacterModal
-          onClose={handleToggleModal}
-          onSubmit={handleAddCharacter}
-        />
-      )}
+      {toaster && <Toaster message={toaster.message} type={toaster.type} onClose={closeToaster} />}
+      {isOpen && <CharacterModal onClose={handleToggleModal} onSubmit={handleAddCharacter} />}
     </div>
   );
 }
